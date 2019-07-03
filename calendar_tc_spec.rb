@@ -40,6 +40,10 @@ describe EventCalendar do
       expect(@ec.printCalendar(11,2019)).not_to eql "fail"
     end
 
+    it "should return correct month length for given month and year" do
+      expect(@ec.month_length(2,2012)).to eql 29
+    end
+
   end
 
   context "Testing for invalid inputs: " do
@@ -80,6 +84,10 @@ describe EventCalendar do
 
     it "should not print the calendar for the invalid year given as input by the user" do
         expect(@ec.printCalendar(11,-2019)).to eql "fail"
+    end
+
+    it "should return error for incorrect month or year" do
+      expect(@ec.month_length(22,2012)).to be_falsey
     end
 
   end
