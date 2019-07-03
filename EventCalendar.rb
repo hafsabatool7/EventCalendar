@@ -1,10 +1,11 @@
 require 'date'
 require_relative 'Event'
+require 'colorize'
 
 class EventCalendar
 
     attr_accessor :events_list
-    MONTHLENGTHS = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    @@MONTHLENGTHS = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     def initialize
         @events_list = Hash.new
@@ -33,15 +34,15 @@ class EventCalendar
     end
 
     def print_options(input)
-        puts "\n \n __________________________________________________ \n \n"
-        puts '<><><><><> MENU <><><><><> '
-        puts '> To ADD an Event, press 1'
-        puts '> To REMOVE an Event, press 2'
-        puts '> To EDIT an Event, press 3'
-        puts '> To Print Calendar for a Month, press 4'
-        puts '> To Print Events on a Date, press 5'
-        puts '> To Print Event Details for a Month, press 6'
-        puts '> To Quit or Exit the program, press any other key'
+        puts "\n \n __________________________________________________ \n \n".green
+        puts '<><><><><><><><> MENU <><><><><><><><> '.green
+        puts '> To ADD an Event, press [1]'.green
+        puts '> To REMOVE an Event, press [2]'.green
+        puts '> To EDIT an Event, press [3]'.green
+        puts '> To Print Calendar for a Month, press [4]'.green
+        puts '> To Print Events on a Date, press [5]'.green
+        puts '> To Print Event Details for a Month, press [6]'.green
+        puts '> To Quit or Exit the program, press any other key! '.green
 
         print "\n \n Your Input:"
         input = gets
@@ -50,36 +51,37 @@ class EventCalendar
         input = input.chomp
         case input
         when '1'
-          puts "<*> Adding an Event: "
+          puts "<*> Adding an Event: ".yellow
           event_name, event_desc, event_date = takeAllInputs(true, true,true)
           unless event_date.nil?
             addEvent(event_name, event_desc, event_date)
           end
 
         when '2'
-          puts "<*> Removing an Event: "
+          puts "<*> Removing an Event: ".yellow
           event_name, event_desc, event_date = takeAllInputs(true,false,true)
           unless event_date.nil?
             removeEvent(event_name,event_date)
           end
 
         when '3'
-          puts "<*> Editing an Event: "
+          puts "<*> Editing an Event: ".yellow
           event_name, event_desc, event_date = takeAllInputs(true,false,true)
-         puts "Enter NEW information:"
-          puts "(NOTE: Leave blank any information that you do not want to update!) \n"
-          print "Enter New Name: "
-          event_name_new = gets
-          puts ""
-          print "Enter New Description: "
-          event_desc_new = gets
-          puts ""
           unless event_date.nil?
+            puts "Enter NEW information:"
+            puts "(NOTE: Leave blank any information that you do not want to update!) \n"
+            print "Enter New Name: "
+            event_name_new = gets
+            puts ""
+            print "Enter New Description: ".yellow
+            event_desc_new = gets
+            puts ""
+          
             editEventAlt(event_name,event_date,event_name_new,event_desc_new)
           end
           
         when '4'
-          puts "<*> Printing Calendar for a month: "
+          puts "<*> Printing Calendar for a month: ".yellow
           print 'Enter Month Number (1-12): '
           month = gets
           month = month.to_i
@@ -90,35 +92,34 @@ class EventCalendar
           printCalendar(month, year)
 
         when '5'
-          puts "<*> Printing Event on any date: "
+          puts "<*> Printing Event on any date: ".yellow
           event_name, event_desc, event_date = takeAllInputs(false,false,true)
           unless event_date.nil?
             printEventOnDate(event_date)
           end
 
         when '6'
-          puts "<*> Printing Event in any month: "
+          puts "<*> Printing Event in any month: ".yellow
           print 'Enter Month Number (1-12): '
           month = gets
           month = month.to_i
           printEventsForAMonth(month)
 
         else
-          puts "Exiting the program..."
+          puts "Exiting the program...".yellow
           return 'exit'
 
         end
 
     end
 
+    #takes in
     def takeAllInputs(names, desc, date)
-
       event_name, event_desc, event_date = nil,nil,nil
       if names
         puts "Please enter the information for the event as required below: "
         print 'Event Name: '
         event_name = gets
-        puts ""
 
       end
 
@@ -126,27 +127,22 @@ class EventCalendar
 
         print 'Event Description: '
         event_desc = gets
-        puts ""
 
       end
 
       if date
-        print 'Event Date (yyyy-mm-dd): '
+        print 'Event Date: '
         event_date = gets
 
         begin
            event_date = Date.parse(event_date)
         rescue ArgumentError
-          p "Invalid Date! Retry..."
+          puts "Invalid Date! Retry...".red
           return nil,nil,nil
         end
-
         puts ""
-
       end
-
         return event_name, event_desc, event_date
-
     end
 
     def addEvent(event_name, event_desc, event_date)
@@ -178,7 +174,7 @@ class EventCalendar
           size = events.size
           events.delete_if { |e| e.name == event_name}
           if events.size == size
-            puts "No such event exists! \n"
+            puts "No such event exists! \n".red
             return
           end
 
@@ -191,7 +187,7 @@ class EventCalendar
          puts "Successfully deleted the event! \n \n"
          return "success"
        else
-         puts "No such event exists! \n"
+         puts "No such event exists! \n".red
          return "fail"
        end
 
@@ -229,7 +225,7 @@ class EventCalendar
             return "Event information updated!"
 
        else
-        puts "No such event exists! \n"
+        puts "No such event exists! \n".red
 
        end
 
@@ -258,7 +254,7 @@ class EventCalendar
             return "success"
 
        else
-          puts "No such event exists! \n"
+          puts "No such event exists! \n".red
           return "fail"
        end
 
@@ -273,7 +269,7 @@ class EventCalendar
         events.each { |e| puts "Event Name: #{e.name} \nEvent Details: #{e.description} \n ---------------------------------------------"}
         return "success"
       else
-        puts "No event entry exists for this date! \n"
+        puts "No event entry exists for this date! \n".red
       end
 
     end
@@ -299,16 +295,20 @@ class EventCalendar
           return "success"
 
       else
-        puts "Invalid Input! Retry with valid input in range 1-12!"
+        puts "Invalid Input! Retry with valid input in range 1-12!".red
       end
 
     end
 
     def month_length(month = Date.today.month, year = Date.today.year)
 
-       return 29 if month == 2 && Date.gregorian_leap?(year)
-       MONTHLENGTHS[month]
+      if month.between?(1,12) and year > 0
 
+       return 29 if month == 2 && Date.gregorian_leap?(year)
+       @@MONTHLENGTHS[month]
+
+      end
+      
     end
 
     def printCalendar(month = Date.today.month, year = Date.today.year)
@@ -357,5 +357,3 @@ class EventCalendar
 
 end
 
-ec = EventCalendar.new
-ec.start
